@@ -2,34 +2,45 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"log"
+
+	"github.com/xcCodebreaker/rbsg/scripts/plistextract"
 )
 
 func main() {
-	fmt.Println("Hello World")
-
-	wd, _ := os.Getwd()
-	fmt.Println("Current working directory:", wd)
-
-	x, err := os.ReadDir(".")
+	// Extract the playlists
+	playlists, err := plistextract.ExtractPlaylists()
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalf("Error extracting playlists: %v", err)
 	}
 
-	fmt.Println(x)
-
-	// for _, file := range x {
-	// 	fmt.Println(file.Name())
-	// }
-
-	//file := 9
-	for _, entry := range x {
-		if entry.IsDir() {
-			fmt.Println(entry.Name(), "is a directory")
-		} else {
-			fmt.Println(entry.Name(), "is a file")
-		}
+	fmt.Println("Playlists found:")
+	for i, playlist := range playlists {
+		fmt.Printf("%d : %s\n", i+1, playlist)
 	}
 
+	//Select a playlist
+	var choice int
+
+	fmt.Println("Select a playlist (1, 2 or...): ")
+	fmt.Scan(&choice)
+	if choice < 1 || choice > len(playlists) {
+		log.Fatal("Invalid playlist selection")
+	}
+
+	selectedPlaylist := playlists[choice-1]
+
+	fmt.Println("Selected playlist:", selectedPlaylist)
+	fmt.Println("")
+
+	//Extract songs
+	songs, err := plistextract.ExtractSongs(selectedPlaylist)
+	if err != nil {
+		log.Fatalf("Error extracting songs: %v", err)
+	}
+
+	fmt.Println("Songs found:")
+	for i, song := range songs {
+		fmt.Printf("%d : %s\n", i+1, song)
+	}
 }
