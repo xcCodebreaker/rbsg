@@ -33,14 +33,35 @@ func main() {
 	fmt.Println("Selected playlist:", selectedPlaylist)
 	fmt.Println("")
 
-	//Extract songs
+	//Extract songs directory
 	songs, err := plistextract.ExtractSongs(selectedPlaylist)
 	if err != nil {
 		log.Fatalf("Error extracting songs: %v", err)
 	}
 
+	var temp []string
+
 	fmt.Println("Songs found:")
-	for i, song := range songs {
-		fmt.Printf("%d : %s\n", i+1, song)
+	for _, song := range songs {
+		fmt.Printf("%s\n", song)
+		temp = append(temp, song)
+	}
+
+	//Get the target directory
+	var targetDir string
+
+	fmt.Println("Target directory to copy the songs: ")
+	fmt.Scan(&targetDir)
+
+	//Copy the songs to another directory
+
+	copied, err := plistextract.CopySongs(temp, targetDir)
+	if err != nil {
+		log.Fatalf("Error copying songs: %v", err) //Try not to forget error handling
+	}
+
+	fmt.Println("Copied files:")
+	for _, c := range copied {
+		fmt.Println(c)
 	}
 }
